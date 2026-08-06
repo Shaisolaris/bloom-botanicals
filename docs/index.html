@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloom Botanicals — Plant Shop</title>
+<meta name="description" content="E-commerce plant shop with a working cart, product filters, quick-view sheet, and checkout flow.">
+<style>
+:root{
+  --cream:#F8F6F1;--ink:#252B23;--sub:#75806F;--line:#E5E3DA;--panel:#FFFFFF;
+  --green:#3E6B4A;--green-dark:#2C4E36;--terra:#C77B4F;
+  --serif:'Fraunces',Georgia,serif;--sans:'Inter',-apple-system,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--cream);color:var(--ink);line-height:1.6;font-size:14.5px}
+h1,h2,h3,.logo{font-family:var(--serif);font-weight:600}
+.nav{position:sticky;top:0;z-index:100;background:rgba(248,246,241,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:15px 40px}
+.logo{font-size:22px;text-decoration:none;color:var(--ink)}
+.logo span{color:var(--green)}
+.links{display:flex;gap:26px;align-items:center}
+.links a{text-decoration:none;color:var(--ink);font-size:13.5px;font-weight:600}
+.links a:hover{color:var(--green)}
+.cartbtn{position:relative;background:var(--green);border:0;color:#fff;border-radius:100px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s}
+.cartbtn:hover{background:var(--green-dark)}
+.cartcount{position:absolute;top:-7px;right:-5px;background:var(--terra);color:#fff;width:21px;height:21px;border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:800}
+/* hero */
+.hero{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:40px;padding:60px 40px;max-width:1180px;margin:0 auto}
+.eyebrow{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--green);font-weight:800;margin-bottom:14px}
+.hero h1{font-size:clamp(38px,5.4vw,62px);line-height:1.06;margin-bottom:18px}
+.hero h1 em{font-style:italic;color:var(--green)}
+.hero p{color:var(--sub);max-width:420px;margin-bottom:28px;font-size:15.5px}
+.btn{display:inline-block;background:var(--green);color:#fff;border:0;border-radius:100px;padding:14px 32px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--sans);text-decoration:none;transition:.2s}
+.btn:hover{background:var(--green-dark)}
+.btn.ghost{background:transparent;color:var(--green);border:1.5px solid var(--green)}
+.btn.ghost:hover{background:var(--green);color:#fff}
+.btn.wide{width:100%;text-align:center}
+.heroart{aspect-ratio:1;border-radius:24px;background:linear-gradient(145deg,#8FAE8C,#5A7D5E 55%,#38543E);position:relative;overflow:hidden}
+.heroart::after{content:'🪴';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:130px;filter:drop-shadow(0 20px 30px rgba(0,0,0,.25))}
+.perks{display:flex;gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--panel)}
+.perk{flex:1;text-align:center;padding:18px 12px;font-size:12.5px;color:var(--sub);border-right:1px solid var(--line)}
+.perk:last-child{border-right:0}
+.perk b{color:var(--ink);display:block;font-size:13px}
+/* shop */
+.shop{max-width:1180px;margin:0 auto;padding:64px 40px}
+.shophead{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:26px;flex-wrap:wrap;gap:16px}
+h2{font-size:clamp(28px,4vw,40px)}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:9px 18px;border-radius:100px;border:1px solid var(--line);background:var(--panel);font-size:12.5px;font-weight:600;color:var(--sub);cursor:pointer;transition:.15s;font-family:inherit}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:.25s;cursor:pointer;position:relative}
+.card:hover{transform:translateY(-4px);box-shadow:0 20px 44px rgba(50,60,45,.1)}
+.cimg{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:64px;position:relative}
+.badge{position:absolute;top:12px;left:12px;background:var(--terra);color:#fff;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:5px 11px;border-radius:100px}
+.badge.new{background:var(--green)}
+.cbody{padding:15px 16px 17px}
+.cname{font-family:var(--serif);font-size:17px}
+.clat{color:var(--sub);font-size:11.5px;font-style:italic;margin:2px 0 9px}
+.crow{display:flex;justify-content:space-between;align-items:center}
+.cprice{font-weight:800;font-size:15px}
+.cprice s{color:var(--sub);font-weight:500;font-size:12.5px;margin-right:6px}
+.addbtn{background:var(--cream);border:1px solid var(--line);border-radius:100px;padding:8px 15px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;color:var(--ink)}
+.addbtn:hover{background:var(--green);border-color:var(--green);color:#fff}
+/* quick view */
+.sheetback{position:fixed;inset:0;background:rgba(30,35,28,.45);z-index:150;display:none;align-items:center;justify-content:center;padding:20px}
+.sheetback.open{display:flex}
+.sheet{background:var(--panel);border-radius:20px;max-width:680px;width:100%;display:grid;grid-template-columns:1fr 1fr;overflow:hidden;max-height:88vh}
+.qimg{display:flex;align-items:center;justify-content:center;font-size:110px;min-height:300px}
+.qbody{padding:32px 30px;overflow-y:auto}
+.qclose{float:right;background:none;border:0;font-size:19px;cursor:pointer;color:var(--sub)}
+.qname{font-family:var(--serif);font-size:26px}
+.qlat{color:var(--sub);font-style:italic;font-size:13px;margin:2px 0 14px}
+.qprice{font-size:22px;font-weight:800;margin-bottom:16px}
+.qdesc{color:var(--sub);font-size:13.5px;margin-bottom:18px}
+.care{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.careitem{background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:8px 13px;font-size:11.5px;font-weight:600}
+.qty{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.qty button{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--panel);font-size:16px;cursor:pointer;font-weight:700}
+.qty b{font-size:16px;min-width:20px;text-align:center}
+/* cart drawer */
+.drawer{position:fixed;top:0;right:0;bottom:0;width:390px;background:var(--panel);border-left:1px solid var(--line);box-shadow:-24px 0 60px rgba(40,48,36,.15);transform:translateX(100%);transition:transform .3s ease;z-index:180;display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.dhead{display:flex;justify-content:space-between;align-items:center;padding:20px 22px;border-bottom:1px solid var(--line)}
+.dhead h3{font-size:20px}
+.ditems{flex:1;overflow-y:auto;padding:16px 22px}
+.ditem{display:flex;gap:13px;padding:12px 0;border-bottom:1px solid var(--line);align-items:center}
+.dimg{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.dname{font-family:var(--serif);font-size:15px}
+.dqty{display:flex;align-items:center;gap:9px;margin-top:6px}
+.dqty button{width:23px;height:23px;border-radius:50%;border:1px solid var(--line);background:var(--panel);font-size:12px;cursor:pointer}
+.dprice{margin-left:auto;font-weight:800;font-size:14px}
+.dfoot{border-top:1px solid var(--line);padding:18px 22px}
+.dline{display:flex;justify-content:space-between;font-size:13.5px;color:var(--sub);padding:3px 0}
+.dline.total{font-size:17px;font-weight:800;color:var(--ink);padding-top:9px}
+.freebar{height:6px;background:var(--cream);border-radius:100px;margin:12px 0 6px;overflow:hidden}
+.freefill{height:100%;background:var(--green);border-radius:100px;transition:width .4s}
+.freemsg{font-size:11.5px;color:var(--sub);margin-bottom:12px}
+.empty{text-align:center;color:var(--sub);padding:44px 12px;font-size:13.5px}
+[data-p="1"]{background:linear-gradient(145deg,#DFEAD6,#B4CBA6)}
+[data-p="2"]{background:linear-gradient(145deg,#E8E2CF,#CBBF9C)}
+[data-p="3"]{background:linear-gradient(145deg,#D6E4E0,#A5C2BA)}
+[data-p="4"]{background:linear-gradient(145deg,#EAD9CC,#D0AC90)}
+[data-p="5"]{background:linear-gradient(145deg,#DDE0EC,#AEB4CE)}
+[data-p="6"]{background:linear-gradient(145deg,#E4EBD2,#BFCF9E)}
+[data-p="7"]{background:linear-gradient(145deg,#F0DFD6,#DBB4A2)}
+[data-p="8"]{background:linear-gradient(145deg,#D8E8DC,#A8C9B2)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--ink);color:#fff;padding:12px 25px;border-radius:100px;font-size:13px;font-weight:700;opacity:0;transition:.3s;z-index:250;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.footer{display:flex;justify-content:space-between;align-items:center;padding:34px 40px;border-top:1px solid var(--line);font-size:13px;color:var(--sub);flex-wrap:wrap;gap:12px}
+@media(max-width:960px){.grid{grid-template-columns:1fr 1fr}.hero{grid-template-columns:1fr;padding:40px 20px}.shop{padding:44px 20px}.nav{padding:13px 18px}.links a:not(.cartwrap){display:none}}
+@media(max-width:640px){.sheet{grid-template-columns:1fr}.qimg{min-height:180px;font-size:80px}.drawer{width:100%}.perks{flex-wrap:wrap}.perk{flex-basis:50%;border-bottom:1px solid var(--line)}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#" class="logo">Bloom<span>·</span>Botanicals</a>
+  <div class="links">
+    <a href="#shop">Shop</a><a href="#" onclick="toast('Care guides (demo)');return false">Care Guides</a>
+    <button class="cartbtn" onclick="openCart()">Cart<span class="cartcount" id="cartCount">0</span></button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div>
+    <p class="eyebrow">Greenhouse-grown · Shipped rooted</p>
+    <h1>Bring something <em>alive</em> home.</h1>
+    <p>Hand-raised houseplants, potted in breathable terracotta and shipped with a care card written for your light, not a generic one.</p>
+    <a href="#shop" class="btn">Shop plants</a>
+  </div>
+  <div class="heroart"></div>
+</header>
+
+<div class="perks">
+  <div class="perk"><b>Free shipping $75+</b>carbon-neutral</div>
+  <div class="perk"><b>30-day guarantee</b>we replace, no questions</div>
+  <div class="perk"><b>Rooted, not cut</b>every plant est. 6+ months</div>
+  <div class="perk"><b>Care support</b>text a botanist, free</div>
+</div>
+
+<section class="shop" id="shop">
+  <div class="shophead">
+    <h2>The collection</h2>
+    <div class="filters" id="filters"></div>
+  </div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<footer class="footer">
+  <span class="logo" style="font-size:18px">Bloom<span style="color:var(--green)">·</span>Botanicals</span>
+  <span>Greenhouse & shop — Portland</span>
+  <span>© 2026 Bloom Botanicals</span>
+</footer>
+
+<!-- quick view -->
+<div class="sheetback" id="sheetBack">
+  <div class="sheet">
+    <div class="qimg" id="qImg"></div>
+    <div class="qbody">
+      <button class="qclose" onclick="closeQuick()">✕</button>
+      <div class="qname" id="qName"></div>
+      <div class="qlat" id="qLat"></div>
+      <div class="qprice" id="qPrice"></div>
+      <p class="qdesc" id="qDesc"></p>
+      <div class="care" id="qCare"></div>
+      <div class="qty">
+        <button onclick="qtyDelta(-1)">−</button><b id="qQty">1</b><button onclick="qtyDelta(1)">+</button>
+      </div>
+      <button class="btn wide" onclick="addFromQuick()">Add to cart</button>
+    </div>
+  </div>
+</div>
+
+<!-- cart drawer -->
+<div class="drawer" id="cartDrawer">
+  <div class="dhead"><h3>Your cart</h3><button class="qclose" onclick="closeCart()">✕</button></div>
+  <div class="ditems" id="cartItems"></div>
+  <div class="dfoot">
+    <div class="freebar"><div class="freefill" id="freeFill"></div></div>
+    <div class="freemsg" id="freeMsg"></div>
+    <div class="dline"><span>Subtotal</span><span id="subT"></span></div>
+    <div class="dline"><span>Shipping</span><span id="shipT"></span></div>
+    <div class="dline total"><span>Total</span><span id="totT"></span></div>
+    <button class="btn wide" style="margin-top:12px" onclick="checkout()" id="checkoutBtn">Checkout</button>
+  </div>
+</div>
+
+<div class="toast" id="toastEl"></div>
+
+<script>
+const PLANTS=[
+ {n:'Monstera Deliciosa',lat:'Monstera deliciosa',e:'🪴',p:1,price:48,was:null,cat:'Statement',badge:'new',light:'Bright indirect',water:'Weekly',pet:'Not pet-safe',
+  d:'The classic split-leaf. Fast, forgiving, and dramatic — new fenestrated leaves every few weeks in good light.'},
+ {n:'Snake Plant',lat:'Dracaena trifasciata',e:'🌵',p:2,price:32,was:null,cat:'Easy Care',badge:null,light:'Any light',water:'Every 3 wks',pet:'Not pet-safe',
+  d:'Nearly unkillable. Tolerates low light, missed waterings, and neglect with total indifference.'},
+ {n:'Fiddle Leaf Fig',lat:'Ficus lyrata',e:'🌳',p:3,price:74,was:89,cat:'Statement',badge:'sale',light:'Bright direct',water:'Weekly',pet:'Not pet-safe',
+  d:'The interior-design icon. Ours are greenhouse-hardened for two seasons so they don\'t sulk when they move in.'},
+ {n:'Golden Pothos',lat:'Epipremnum aureum',e:'🌿',p:6,price:24,was:null,cat:'Easy Care',badge:null,light:'Low to bright',water:'Every 10 days',pet:'Not pet-safe',
+  d:'Trailing vines that grow visibly week to week. The best first plant anyone can own.'},
+ {n:'Calathea Orbifolia',lat:'Goeppertia orbifolia',e:'🍃',p:8,price:42,was:null,cat:'Pet Friendly',badge:null,light:'Medium indirect',water:'Weekly, filtered',pet:'Pet-safe ✓',
+  d:'Striped, oversized leaves that fold up at night. A diva about tap water — worth it.'},
+ {n:'Parlor Palm',lat:'Chamaedorea elegans',e:'🌴',p:4,price:36,was:null,cat:'Pet Friendly',badge:null,light:'Medium indirect',water:'Weekly',pet:'Pet-safe ✓',
+  d:'Soft, feathery fronds and completely non-toxic. Victorian parlors had the right idea.'},
+ {n:'String of Pearls',lat:'Curio rowleyanus',e:'🫛',p:5,price:28,was:null,cat:'Easy Care',badge:'new',light:'Bright indirect',water:'Every 2 wks',pet:'Not pet-safe',
+  d:'Cascading beads that spill over any shelf. Ships in a hanging terracotta pot.'},
+ {n:'Bird of Paradise',lat:'Strelitzia nicolai',e:'🌺',p:7,price:88,was:null,cat:'Statement',badge:null,light:'Bright direct',water:'Weekly',pet:'Not pet-safe',
+  d:'Banana-like leaves that hit the ceiling before you expect it. The biggest thing we ship.'},
+];
+const CATS=['All','Statement','Easy Care','Pet Friendly'];
+let activeCat='All', cart=[], quickIdx=0, quickQty=1;
+const FREE_AT=75;
+const fmt=n=>'$'+n.toFixed(2).replace(/\.00$/,'');
+
+function renderFilters(){
+ document.getElementById('filters').innerHTML=CATS.map(c=>
+  `<button class="chip${c===activeCat?' on':''}" onclick="activeCat='${c}';renderFilters();renderGrid()">${c}</button>`).join('');
+}
+function renderGrid(){
+ const list=PLANTS.filter(p=>activeCat==='All'||p.cat===activeCat);
+ document.getElementById('grid').innerHTML=list.map(p=>{
+  const i=PLANTS.indexOf(p);
+  return `<div class="card" onclick="openQuick(${i})">
+   ${p.badge?`<span class="badge ${p.badge==='new'?'new':''}">${p.badge}</span>`:''}
+   <div class="cimg" data-p="${p.p}">${p.e}</div>
+   <div class="cbody">
+     <div class="cname">${p.n}</div><div class="clat">${p.lat}</div>
+     <div class="crow">
+       <span class="cprice">${p.was?`<s>${fmt(p.was)}</s>`:''}${fmt(p.price)}</span>
+       <button class="addbtn" onclick="event.stopPropagation();addToCart(${i},1)">Add +</button>
+     </div>
+   </div></div>`}).join('');
+}
+// quick view
+function openQuick(i){
+ quickIdx=i;quickQty=1;
+ const p=PLANTS[i];
+ const img=document.getElementById('qImg');
+ img.setAttribute('data-p',p.p);img.textContent=p.e;
+ document.getElementById('qName').textContent=p.n;
+ document.getElementById('qLat').textContent=p.lat;
+ document.getElementById('qPrice').innerHTML=(p.was?`<s style="color:var(--sub);font-size:15px;font-weight:500">${fmt(p.was)}</s> `:'')+fmt(p.price);
+ document.getElementById('qDesc').textContent=p.d;
+ document.getElementById('qCare').innerHTML=
+  `<span class="careitem">☀️ ${p.light}</span><span class="careitem">💧 ${p.water}</span><span class="careitem">🐾 ${p.pet}</span>`;
+ document.getElementById('qQty').textContent=quickQty;
+ document.getElementById('sheetBack').classList.add('open');
+}
+function closeQuick(){document.getElementById('sheetBack').classList.remove('open')}
+function qtyDelta(d){quickQty=Math.max(1,quickQty+d);document.getElementById('qQty').textContent=quickQty}
+function addFromQuick(){addToCart(quickIdx,quickQty);closeQuick()}
+// cart
+function addToCart(i,qty){
+ const item=cart.find(c=>c.i===i);
+ if(item)item.qty+=qty;else cart.push({i,qty});
+ toast(`${PLANTS[i].n} added ✓`);
+ renderCart();
+}
+function changeQty(idx,d){
+ cart[idx].qty+=d;
+ if(cart[idx].qty<=0)cart.splice(idx,1);
+ renderCart();
+}
+function renderCart(){
+ const count=cart.reduce((s,c)=>s+c.qty,0);
+ document.getElementById('cartCount').textContent=count;
+ const sub=cart.reduce((s,c)=>s+PLANTS[c.i].price*c.qty,0);
+ document.getElementById('cartItems').innerHTML=cart.length?cart.map((c,idx)=>{
+  const p=PLANTS[c.i];
+  return `<div class="ditem">
+   <div class="dimg" data-p="${p.p}">${p.e}</div>
+   <div><div class="dname">${p.n}</div>
+    <div class="dqty"><button onclick="changeQty(${idx},-1)">−</button><span>${c.qty}</span><button onclick="changeQty(${idx},1)">+</button></div>
+   </div>
+   <span class="dprice">${fmt(p.price*c.qty)}</span></div>`}).join('')
+ :'<div class="empty">Your cart is empty.<br>Every plant ships rooted and guaranteed. 🌿</div>';
+ const ship=sub>=FREE_AT||sub===0?0:8.5;
+ document.getElementById('subT').textContent=fmt(sub);
+ document.getElementById('shipT').textContent=sub===0?'—':ship===0?'Free ✓':fmt(ship);
+ document.getElementById('totT').textContent=fmt(sub+ship);
+ document.getElementById('freeFill').style.width=Math.min(100,sub/FREE_AT*100)+'%';
+ document.getElementById('freeMsg').textContent=sub>=FREE_AT?'Free shipping unlocked 🎉':sub===0?`Free shipping at ${fmt(FREE_AT)}`:`${fmt(FREE_AT-sub)} away from free shipping`;
+ document.getElementById('checkoutBtn').disabled=cart.length===0;
+}
+function openCart(){renderCart();document.getElementById('cartDrawer').classList.add('open')}
+function closeCart(){document.getElementById('cartDrawer').classList.remove('open')}
+function checkout(){
+ if(!cart.length)return;
+ const total=document.getElementById('totT').textContent;
+ cart=[];renderCart();closeCart();
+ toast(`Order placed — ${total} · confirmation #BB-${Math.floor(1000+Math.random()*9000)} ✓`);
+}
+document.getElementById('sheetBack').addEventListener('click',e=>{if(e.target.id==='sheetBack')closeQuick()});
+let tt;
+function toast(m){
+ const t=document.getElementById('toastEl');
+ t.textContent=m;t.classList.add('show');
+ clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2200);
+}
+renderFilters();renderGrid();renderCart();
+</script>
+</body>
+</html>
